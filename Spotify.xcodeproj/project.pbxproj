@@ -29,6 +29,7 @@
 		77F2A6D929B56050009A876B /* AudioTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F2A6D829B56050009A876B /* AudioTrack.swift */; };
 		77F2A6DB29B56057009A876B /* Artist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F2A6DA29B56057009A876B /* Artist.swift */; };
 		77F2A6DD29B5605F009A876B /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F2A6DC29B5605F009A876B /* UserProfile.swift */; };
+		77F2A6DF29B6BC39009A876B /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F2A6DE29B6BC39009A876B /* Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +57,7 @@
 		77F2A6D829B56050009A876B /* AudioTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTrack.swift; sourceTree = "<group>"; };
 		77F2A6DA29B56057009A876B /* Artist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Artist.swift; sourceTree = "<group>"; };
 		77F2A6DC29B5605F009A876B /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
+		77F2A6DE29B6BC39009A876B /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,6 +152,7 @@
 				77F2A6A729B55C66009A876B /* Assets.xcassets */,
 				77F2A69E29B55C65009A876B /* AppDelegate.swift */,
 				77F2A6A029B55C65009A876B /* SceneDelegate.swift */,
+				77F2A6DE29B6BC39009A876B /* Extensions.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -262,6 +265,7 @@
 				77F2A6A329B55C65009A876B /* HomeViewController.swift in Sources */,
 				77F2A6C129B55EE9009A876B /* AuthViewController.swift in Sources */,
 				77F2A69F29B55C65009A876B /* AppDelegate.swift in Sources */,
+				77F2A6DF29B6BC39009A876B /* Extensions.swift in Sources */,
 				77F2A6BD29B55EC7009A876B /* LibraryViewController.swift in Sources */,
 				77F2A6DB29B56057009A876B /* Artist.swift in Sources */,
 				77F2A6CB29B55F28009A876B /* PlaylistViewController.swift in Sources */,
