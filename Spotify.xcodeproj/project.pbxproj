@@ -30,6 +30,7 @@
 		77F2A6DB29B56057009A876B /* Artist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F2A6DA29B56057009A876B /* Artist.swift */; };
 		77F2A6DD29B5605F009A876B /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F2A6DC29B5605F009A876B /* UserProfile.swift */; };
 		77F2A6DF29B6BC39009A876B /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F2A6DE29B6BC39009A876B /* Extensions.swift */; };
+		77F2A6E129B7F633009A876B /* AuthResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F2A6E029B7F633009A876B /* AuthResponse.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +59,7 @@
 		77F2A6DA29B56057009A876B /* Artist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Artist.swift; sourceTree = "<group>"; };
 		77F2A6DC29B5605F009A876B /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
 		77F2A6DE29B6BC39009A876B /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		77F2A6E029B7F633009A876B /* AuthResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthResponse.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +127,7 @@
 				77F2A6D829B56050009A876B /* AudioTrack.swift */,
 				77F2A6DA29B56057009A876B /* Artist.swift */,
 				77F2A6DC29B5605F009A876B /* UserProfile.swift */,
+				77F2A6E029B7F633009A876B /* AuthResponse.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -260,6 +263,7 @@
 				77F2A6C329B55EF2009A876B /* WelcomeViewController.swift in Sources */,
 				77F2A6D529B55FD2009A876B /* HapticsManager.swift in Sources */,
 				77F2A6C729B55F0F009A876B /* ProfileViewController.swift in Sources */,
+				77F2A6E129B7F633009A876B /* AuthResponse.swift in Sources */,
 				77F2A6B929B55E9D009A876B /* TabBarViewController.swift in Sources */,
 				77F2A6D929B56050009A876B /* AudioTrack.swift in Sources */,
 				77F2A6A329B55C65009A876B /* HomeViewController.swift in Sources */,
