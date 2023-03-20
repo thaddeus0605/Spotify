@@ -17,7 +17,7 @@ final class AuthManager {
         static let clientSecret = "ccccb0dba40b4633867d22c8650685fe"
         static let tokenAPIURL = "https://accounts.spotify.com/api/token"
         static let redirectURI = "https://iosacademy.io"
-        static let scopes = "user-read-private%20playlist-modify-public%20playlist-read-private%20playlist-modufy-private%20user-follow-read%20user-library-modify%20user-library-read%20user-read-email"
+        static let scopes = "user-read-private%20playlist-modify-public%20playlist-read-private%20playlist-modify-private%20user-follow-read%20user-library-modify%20user-library-read%20user-read-email"
     }
     
     public var signInURL: URL? {
@@ -127,17 +127,14 @@ final class AuthManager {
         }
     }
     
-    public func refreshTokenIfNeeded(completion: @escaping (Bool) -> Void) {
-        
+    public func refreshTokenIfNeeded(completion: ((Bool) -> Void)?) {
         guard !refreshingToken else {
            return
         }
-        
         guard shouldRefreshToken else {
-            completion(true)
+            completion?(true)
             return
         }
-        
         guard let refreshToken = self.refreshToken else {
             return
         }
@@ -164,7 +161,7 @@ final class AuthManager {
         let data = basicToken.data(using: .utf8)
         guard let base64String = data?.base64EncodedString() else {
             print("Failure to get base 64")
-            completion(false)
+            completion?(false)
             return
         }
         
@@ -174,7 +171,7 @@ final class AuthManager {
             self?.refreshingToken = false
             guard let data = data,
                       error == nil else {
-                      completion(false)
+                      completion?(false)
                 return
             }
             do {
@@ -182,10 +179,10 @@ final class AuthManager {
                 self?.onRefreshBlocks.forEach{ $0(result.access_token) }
                 self?.onRefreshBlocks.removeAll()
                 self?.cacheToken(result: result)
-                completion(true)
+                completion?(true)
             } catch {
                 print(error.localizedDescription)
-                completion(false)
+//                completion?(false)
             }
         }
         task.resume()

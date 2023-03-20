@@ -60,7 +60,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         models.append("Full Name: \(model.display_name)")
         models.append("Email Address: \(model.email)")
         models.append("User ID: \(model.id)")
-        models.append("Plan: \(model.product)")
+        models.append("Plan: \(model.product.uppercased())")
+        models.append("Type: \(model.type)")
         createTableHeader(with: model.images.first?.url)
         tableView.reloadData()
     }

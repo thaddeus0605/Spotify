@@ -8,9 +8,6 @@
 import UIKit
 
 class WelcomeViewController: UIViewController {
-    
-    
-
     private let signInButton: UIButton = {
         let button = UIButton()
         button.setTitle("Sign In With Your Spotify Account", for: .normal)

@@ -14,21 +14,9 @@ struct UserProfile: Codable {
     let explicit_content: [String: Bool]
     let external_urls: [String: String]
     let id: String
-    let images: [UserImage]
+    let images: [APIImage]
     let product: String
     let type: String
 }
 
-struct UserImage: Codable {
-    let url: String
-}
 
-//
-//
-//    id = 01nvb0somm48hpas0u485m7xq;
-//    images =     (
-//    );
-//    product = free;
-//    type = user;
-//    uri = "spotify:user:01nvb0somm48hpas0u485m7xq";
-//}

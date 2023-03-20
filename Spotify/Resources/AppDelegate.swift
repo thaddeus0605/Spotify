@@ -15,9 +15,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
         //no storyboard! Programatically set initial view based if the use has signed in
         let window = UIWindow(frame: UIScreen.main.bounds)
         if AuthManager.shared.isSignedIn {
+            AuthManager.shared.refreshTokenIfNeeded(completion: nil)
             window.rootViewController = TabBarViewController()
         } else {
             let navVC = UINavigationController(rootViewController: WelcomeViewController())
