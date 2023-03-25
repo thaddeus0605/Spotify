@@ -192,6 +192,92 @@ final class APICaller {
     }
     
     
+    //MARK: - Get Search Categories
+    
+    public func getCategories(completion: @escaping (Result<[Category], Error>) -> Void) {
+        creatRequest(
+            with: URL(string: Constants.baseUrl + "browse/categories?limit=50"),
+            type: .GET
+        ) { request in
+            let task = URLSession.shared.dataTask(with: request) { data, _, error in
+                guard let data = data, error == nil else {
+                    completion(.failure(APIError.failedToGetData))
+                    return
+                }
+                do {
+                    let result = try JSONDecoder().decode(CatergoriesResponse.self, from: data)
+                    print(result.categories.items)
+                    completion(.success(result.categories.items))
+//                    let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+//                    print(json)
+                } catch {
+                    print(error)
+                    completion(.failure(error))
+                }
+            }
+            task.resume()
+        }
+    }
+    
+    public func getCategoryPlaylists(category: Category, completion: @escaping (Result<[Playlist], Error>) -> Void) {
+        creatRequest(
+            with: URL(string: Constants.baseUrl + "browse/categories/\(category.id)/playlists?limit=20"),
+            type: .GET
+        ) { request in
+            let task = URLSession.shared.dataTask(with: request) { data, _, error in
+                guard let data = data, error == nil else {
+                    completion(.failure(APIError.failedToGetData))
+                    return
+                }
+                do {
+                    let result = try JSONDecoder().decode(FeaturePlaylistResponse.self, from: data)
+                    let playlist = result.playlists.items
+                    print(playlist)
+                    completion(.success(playlist))
+//                    let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+//                    print(json)
+                } catch {
+                    print(error)
+                    completion(.failure(error))
+                }
+            }
+            task.resume()
+        }
+    }
+    
+    //MARK: - SEARCH API
+    
+    public func search(with query: String, completion: @escaping (Result<[SearchResult], Error>) -> Void) {
+        creatRequest(
+            with: URL(string: Constants.baseUrl + "search?limit=10&type=album,artist,playlist,track&q=\(query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"),
+            type: .GET
+        ) { request in
+            print(request.url?.absoluteString ?? "none")
+            let task = URLSession.shared.dataTask(with: request) { data, _, error in
+                guard let data = data, error == nil else {
+                    completion(.failure(APIError.failedToGetData))
+                    return
+                }
+                do {
+//                    let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+//                    print(json)
+                    let result = try JSONDecoder().decode(SearchResultResponse.self, from: data)
+                    var searchResults: [SearchResult] = []
+                    searchResults.append(contentsOf: result.tracks.items.compactMap({ SearchResult.track(model: $0) }))
+                    searchResults.append(contentsOf: result.artists.items.compactMap({ SearchResult.artist(model: $0) }))
+                    searchResults.append(contentsOf: result.albums.items.compactMap({ SearchResult.album(model: $0) }))
+                    searchResults.append(contentsOf: result.playlists.items.compactMap({ SearchResult.playlist(model: $0) }))
+                    
+                    completion(.success(searchResults))
+                } catch {
+                    print(error)
+                    completion(.failure(error))
+                }
+            }
+            task.resume()
+        }
+    }
+    
     
     // MARK: - Private
     
