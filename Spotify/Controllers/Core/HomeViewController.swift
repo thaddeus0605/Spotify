@@ -61,11 +61,67 @@ class HomeViewController: UIViewController {
         configureCollectionView()
         view.addSubview(spinner)
         fetchData()
+        addLongGestureTap()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         collectionView.frame = view.bounds
+    }
+    
+    private func addLongGestureTap() {
+        let gesture = UILongPressGestureRecognizer(target: self, action: #selector(didLongPress(_:)))
+        collectionView.isUserInteractionEnabled = true
+        collectionView.addGestureRecognizer(gesture)
+    }
+    
+    @objc func didLongPress(_ gesture: UILongPressGestureRecognizer) {
+        print("did hold")
+        HapticsManager.shared.vibrateForSelection()
+        guard gesture.state == .began else {
+            return
+        }
+        
+        let touchPoint = gesture.location(in: collectionView)
+        print("point: \(touchPoint)")
+        guard let indexPath = collectionView.indexPathForItem(at: touchPoint),
+              indexPath.section == 2 else {
+            return
+        }
+        
+        let model = tracks[indexPath.row]
+        
+        let actionSheet = UIAlertController(
+            title: model.name,
+            message: "Would you like to add to a playlist",
+            preferredStyle: .actionSheet
+        )
+        
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        actionSheet.addAction(UIAlertAction(title: "Add to Playlist", style: .default, handler: { [weak self] _ in
+            DispatchQueue.main.async {
+                let vc = LibraryPlaylistsViewController()
+                vc.sectionHandler = { playlist in
+                    APICaller.shared.addTrackToPlaylist(
+                        track: model,
+                        playlist: playlist
+                    ) { success in
+                        if success {
+                            print("Here is the playlist: \(success)")
+                        } else {
+                            print("failed to add track to playlist")
+                        }
+                        
+                    }
+                    
+                }
+                vc.title = "Select Playlist"
+                self?.present(UINavigationController(rootViewController: vc), animated: true, completion: nil)
+            }
+        }))
+        
+        present(actionSheet, animated: true)
     }
     
     private func configureCollectionView() {
@@ -136,7 +192,7 @@ class HomeViewController: UIViewController {
                     }
                 }
                 print("Genre Seeds: \(seeds)")
-            APICaller.shared.getRecommendations(genres: seeds) { recommendedResults in
+                APICaller.shared.getRecommendations(genres: seeds) { recommendedResults in
                     defer {
                         group.leave()
                     }
@@ -266,6 +322,7 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         let section = sections[indexPath.section]
+        HapticsManager.shared.vibrateForSelection()
         switch section {
         case .featuredPlaylists:
             let playlist = playlists[indexPath.row]
@@ -280,7 +337,8 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
             vc.navigationItem.largeTitleDisplayMode = .never
             navigationController?.pushViewController(vc, animated: true)
         case .recommendedTracks:
-            break
+            let track = tracks[indexPath.row]
+            PlaybackPresenter.shared.startPlayback(from: self, track: track)
         }
     }
     
@@ -300,7 +358,7 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
     
     
     static func createSectionLayout(section: Int) -> NSCollectionLayoutSection {
-      let supplementaryView = [
+        let supplementaryView = [
             NSCollectionLayoutBoundarySupplementaryItem(
                 layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1),
                                                    heightDimension: .absolute(50)),
@@ -310,7 +368,7 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         ]
         
         switch section {
-        //NEW RELEASE//
+            //NEW RELEASE//
         case 0:
             //ITEM
             let item = NSCollectionLayoutItem(

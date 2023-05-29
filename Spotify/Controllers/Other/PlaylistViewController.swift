@@ -11,6 +11,8 @@ class PlaylistViewController: UIViewController {
 
     private let playlist: Playlist
     
+    public var isOWner = false
+    
     private var collectionView: UICollectionView = UICollectionView(
         frame: .zero,
         collectionViewLayout: UICollectionViewCompositionalLayout(sectionProvider: { _, _ in
@@ -52,6 +54,7 @@ class PlaylistViewController: UIViewController {
     }
     
     private var viewModels = [RecommendedTrackCellViewModel]()
+    private var tracks = [AudioTrack]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -75,6 +78,7 @@ class PlaylistViewController: UIViewController {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let model):
+                    self?.tracks = model.tracks.items.compactMap({ $0.track })
                     self?.viewModels = model.tracks.items.compactMap({
                         RecommendedTrackCellViewModel(
                             name: $0.track.name,
@@ -92,7 +96,66 @@ class PlaylistViewController: UIViewController {
                                                             target: self,
                                                             action: #selector(didTapShare))
         
+        let gesture = UILongPressGestureRecognizer(target: self, action: #selector(didTapLongPress(_:)))
+        collectionView.addGestureRecognizer(gesture)
+        
     }
+    
+    @objc func didTapLongPress(_ gesture: UILongPressGestureRecognizer) {
+        guard gesture.state == .began else {
+            return
+        }
+        
+        let touchPoint = gesture.location(in: collectionView)
+        guard let indexPath = collectionView.indexPathForItem(at: touchPoint) else {
+            return
+        }
+        
+        let trackToDelete = tracks[indexPath.row]
+        
+        let actionSheet = UIAlertController(
+            title: trackToDelete.name,
+            message: "Remove Track From Playlist?",
+            preferredStyle: .actionSheet
+        )
+        
+        actionSheet.addAction(
+            UIAlertAction(
+                title: "Cancel",
+                style: .cancel
+            )
+        )
+        
+        actionSheet.addAction(
+            UIAlertAction(
+                title: "Delete",
+                style: .destructive,
+                handler: { [weak self] _ in
+                    guard let strongSelf = self else {
+                        return
+                    }
+                    APICaller.shared.removeTrackFromPlaylist(track: trackToDelete, playlist: strongSelf.playlist) { success in
+                        DispatchQueue.main.async {
+                            if success {
+                                print("track removed")
+                                strongSelf.tracks.remove(at: indexPath.row)
+                                strongSelf.viewModels.remove(at: indexPath.row)
+                                strongSelf.collectionView.reloadData()
+                            } else {
+                                print("failed to remove")
+                            }
+                        }
+                    }
+                }
+            )
+        )
+        present(
+            actionSheet,
+            animated: true,
+            completion: nil
+        )
+    }
+    
     
     @objc private func didTapShare() {
         guard let url = URL(string: playlist.external_urls["spotify"]  ?? "") else {
@@ -161,12 +224,15 @@ extension PlaylistViewController: UICollectionViewDelegate, UICollectionViewData
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
+        let index = indexPath.row
+        let track = tracks[index]
+        PlaybackPresenter.shared.startPlayback(from: self, track: track)
     }
 }
 
 
 extension PlaylistViewController: PlaylistHeaderCollectionReusableViewDelegate {
     func playlistHeaderCollectionReusableDidTapPlayAll(_ header: PlaylistHeaderCollectionReusableView) {
-        print("Playing All")
+        PlaybackPresenter.shared.startPlayback(from: self, tracks: tracks)
     }
 }

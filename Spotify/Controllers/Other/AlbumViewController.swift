@@ -10,6 +10,7 @@ import UIKit
 class AlbumViewController: UIViewController {
     
     private let album: Album
+    private var tracks = [AudioTrack]()
     private var viewModels = [AlbumCollectionViewCellViewModel]()
     
     private var collectionView: UICollectionView = UICollectionView(
@@ -70,10 +71,34 @@ class AlbumViewController: UIViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         
+        fetchData()
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "heart"), style: .plain, target: self, action: #selector(didTapActions))
+    }
+    
+    @objc func didTapActions() {
+        let actionSheet = UIAlertController(title: album.name, message: "Save \(album.name) to library", preferredStyle: .actionSheet)
+        
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        actionSheet.addAction(UIAlertAction(title: "Save", style: .default, handler: { [weak self] _ in
+            guard let strongSelf = self else { return }
+            APICaller.shared.saveAlbum(album: strongSelf.album) { success in
+                if success {
+                    NotificationCenter.default.post(name: .albumSavedNotification, object: nil)
+                }
+            }
+        }))
+        
+        present(actionSheet, animated: true)
+    }
+    
+    
+    func fetchData() {
         APICaller.shared.getAlbumDetails(album: album) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let model):
+                    self?.tracks = model.tracks.items
                     self?.viewModels = model.tracks.items.compactMap({
                         AlbumCollectionViewCellViewModel(
                             name: $0.name,
@@ -87,6 +112,7 @@ class AlbumViewController: UIViewController {
             }
         }
     }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         collectionView.frame = view.bounds
@@ -138,12 +164,20 @@ extension AlbumViewController: UICollectionViewDelegate, UICollectionViewDataSou
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
+        var track = tracks[indexPath.row]
+        track.album = self.album
+        PlaybackPresenter.shared.startPlayback(from: self, track: track)
     }
 }
 
 
 extension AlbumViewController: PlaylistHeaderCollectionReusableViewDelegate {
     func playlistHeaderCollectionReusableDidTapPlayAll(_ header: PlaylistHeaderCollectionReusableView) {
-        print("Playing All")
+        let tracksWithAlbum: [AudioTrack] = tracks.compactMap({
+            var track = $0
+            track.album = self.album
+            return track
+        })
+        PlaybackPresenter.shared.startPlayback(from: self, tracks: tracksWithAlbum)
     }
 }

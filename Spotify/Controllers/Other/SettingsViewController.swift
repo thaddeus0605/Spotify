@@ -42,7 +42,20 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     private func signOutTapped() {
-        
+        AuthManager.shared.signOut { [weak self] signedOut in
+            if signedOut {
+                DispatchQueue.main.async {
+                    let navVC = UINavigationController(rootViewController: WelcomeViewController())
+                    navVC.navigationBar.prefersLargeTitles = true
+                    navVC.viewControllers.first?.navigationItem.largeTitleDisplayMode = .always
+                    navVC.modalPresentationStyle = .fullScreen
+                    self?.present(navVC, animated: true, completion: {
+                        self?.navigationController?.popToRootViewController(animated: false)
+                    }
+                    )
+                }
+            }
+        }
     }
     
     private func viewProfile() {

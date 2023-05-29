@@ -102,6 +102,7 @@ extension CategoryViewController: UICollectionViewDelegate, UICollectionViewData
         collectionView.deselectItem(at: indexPath, animated: true)
         let playlist = playlists[indexPath.row]
         let vc = PlaylistViewController(playlist: playlist)
+        HapticsManager.shared.vibrateForSelection()
         vc.title = playlist.name
         vc.navigationItem.largeTitleDisplayMode = .never
         navigationController?.pushViewController(vc, animated: true)

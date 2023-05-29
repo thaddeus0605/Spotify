@@ -129,7 +129,7 @@ extension SearchViewController:  SearchResultViewControllerDelegate {
             navigationItem.largeTitleDisplayMode = .never
             navigationController?.pushViewController(vc, animated: true)
         case .track(let model):
-            break
+            PlaybackPresenter.shared.startPlayback(from: self, track: model)
         case .artist(let model):
             guard let url = URL(string: model.external_urls["spotify"] ?? "") else {
                 return
@@ -169,6 +169,7 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         collectionView.deselectItem(at: indexPath, animated: true)
         let category = categories[indexPath.row]
         let vc = CategoryViewController(category: category)
+        HapticsManager.shared.vibrateForSelection()
         vc.navigationItem.largeTitleDisplayMode = .never
         navigationController?.pushViewController(vc, animated: true)
     }
